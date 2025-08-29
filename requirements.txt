@@ -1,5 +1,6 @@
- python-dotenv 
- qdrant-client 
- wordllama 
- google-generativeai 
- pyngrok
+python-dotenv 
+qdrant-client 
+wordllama 
+google-generativeai 
+pyngrok
+uvicorn[standard]
