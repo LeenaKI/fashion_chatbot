@@ -4,3 +4,4 @@ wordllama
 google-generativeai 
 pyngrok
 uvicorn[standard]
+fastapi
