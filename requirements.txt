@@ -1,0 +1,5 @@
+ python-dotenv 
+ qdrant-client 
+ wordllama 
+ google-generativeai 
+ pyngrok
