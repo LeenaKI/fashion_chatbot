@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import os
-import jsontps://fashion-assistant-virid.vercel.app/",  # allow 
+import json
 
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
