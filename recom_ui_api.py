@@ -10,6 +10,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, MatchValue, Range
 from wordllama import WordLlama
 import google.generativeai as genai
+from fastapi.middleware.cors import CORSMiddleware
 
 # ── Load environment ─────────────────────────────────────────────
 load_dotenv()
@@ -165,6 +166,18 @@ def recommend_products(
 
 app = FastAPI(title="Fashion RAG Chatbot")
 
+# ── Add CORS middleware ──────────────────────────────
+origins = [
+    "http://localhost:3000",  # allow your frontend
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # allow GET, POST, etc.
+    allow_headers=["*"],  # allow headers like Content-Type
+)
 
 class RecommendQuerySimple(BaseModel):
     query: str
