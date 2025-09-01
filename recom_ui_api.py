@@ -37,6 +37,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 gemini = genai.GenerativeModel(GEMINI_MODEL)
 
 # ── Load divkit JSON ────────────────────────────────────────────
+""" 
 def _load_divkit_json(path: str) -> Dict[str, Any]:
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -49,6 +50,10 @@ def _load_divkit_json(path: str) -> Dict[str, Any]:
                 "variables": [{"type": "array", "name": "products", "value": []}],
             }
         }
+"""        
+def _load_divkit_json(path: str) -> Dict[str, Any]:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 DIVKIT_JSON = _load_divkit_json(DIVKIT_JSON_PATH)
 
