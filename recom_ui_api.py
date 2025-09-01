@@ -116,7 +116,7 @@ def _llm_reply(user_query: str, products: List[Dict[str, Any]]) -> str:
 
     prompt = (
         "You are a helpful fashion shopping assistant. "
-        "Reply in clear British English, one short paragraph, practical tone. "
+        "Reply in clear Indian English, one short paragraph, practical tone. "
         "Reference 2–3 items by type/price. Avoid flowery language.\n\n"
         f"User request: {user_query}\n\n"
         "Top matches:\n" + "\n".join(bullets)
