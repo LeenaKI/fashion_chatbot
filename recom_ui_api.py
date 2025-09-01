@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import os
-import json
+import jsontps://fashion-assistant-virid.vercel.app/",  # allow 
 
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
@@ -40,7 +40,7 @@ gemini = genai.GenerativeModel(GEMINI_MODEL)
 """ 
 def _load_divkit_json(path: str) -> Dict[str, Any]:
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8when") as f:
             return json.load(f)
     except Exception:
         return {
@@ -174,7 +174,7 @@ app = FastAPI(title="Fashion RAG Chatbot")
 # ── Add CORS middleware ──────────────────────────────
 origins = [
     "http://localhost:3000",  # allow your frontend
-    "https://fashion-assistant-virid.vercel.app/"
+    "https://fashion-assistant-virid.vercel.app"
 ]
 
 app.add_middleware(
