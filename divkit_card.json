@@ -1,0 +1,316 @@
+{
+  "card": {
+    "log_id": "div2_sample_card",
+    "states": [
+      {
+        "state_id": 0,
+        "div": {
+          "items": [
+            {
+              "type": "container",
+              "width": {
+                "type": "match_parent"
+              },
+              "height": {
+                "type": "match_parent"
+              },
+              "alignment_horizontal": "left",
+              "alignment_vertical": "top",
+              "items": [
+                {
+                  "type": "gallery",
+                  "width": {
+                    "type": "wrap_content",
+                    "constrained": true
+                  },
+                  "height": {
+                    "type": "wrap_content"
+                  },
+                  "alignment_horizontal": "left",
+                  "alignment_vertical": "top",
+                  "item_builder": {
+                    "data": "@{products}",
+                    "data_element_name": "product",
+                    "prototypes": [
+                      {
+                        "div": {
+                          "type": "container",
+                          "items": [
+                            {
+                              "type": "container",
+                              "width": {
+                                "type": "fixed",
+                                "value": 250
+                              },
+                            
+                              "border": {
+                                "corner_radius": 8,
+                                "shadow": {
+                                  "color": "#000",
+                                  "blur": 20,
+                                  "alpha": 1,
+                                  "offset": {
+                                    "x": {
+                                      "value": 10,
+                                      "unit": "px"
+                                    },
+                                    "y": {
+                                      "unit": "px",
+                                      "value": 10
+                                    }
+                                  }
+                                },
+                                "stroke": {
+                                  "style": {
+                                    "type": "solid"
+                                  },
+                                  "width": 2,
+                                  "color": "#000"
+                                }
+                              },
+                              "height": {
+                                "type": "wrap_content"
+                              },
+                              "items": [
+                                {
+                                  "type": "image",
+                                  "image_url": "@{product.getUrl('image_url')}",
+                                  "width": {
+                                    "type": "match_parent"
+                                  },
+                                  "height": {
+                                    "type": "fixed",
+                                    "value": 200
+                                  },
+                                  "preload_required": true,
+                                  "alignment_horizontal": "center",
+                                  "scale": "fit"
+                                },
+                                {
+                                  "type": "container",
+                                  "width": {
+                                    "type": "match_parent"
+                                  },
+                                  "height": {
+                                    "type": "fixed",
+                                    "value": 30
+                                  },
+                                  "alignment_horizontal": "center",
+                                  "alignment_vertical": "center",
+                                  "items": [
+                                    {
+                                      "type": "text",
+                                      "text": "@{product.getString('product_type')}",
+                                      "font_size": 20,
+                                      "width": {
+                                        "type": "wrap_content"
+                                      },
+                                      "alignment_horizontal": "center"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "text": "₹1499.0",
+                                      "width": {
+                                        "type": "match_parent"
+                                      },
+                                      "text_color": "#478249",
+                                      "font_weight": "bold",
+                                      "alignment_horizontal": "center",
+                                      "text_alignment_horizontal": "right"
+                                    }
+                                  ],
+                                  "orientation": "horizontal",
+                                  "margins": {
+                                    "top": 15
+                                  },
+                                  "content_alignment_horizontal": "center",
+                                  "content_alignment_vertical": "center"
+                                },
+                                {
+                                  "type": "text",
+                                  "text": "@{product.getString('description')}",
+                                  "font_size": 12,
+                                  "width": {
+                                    "type": "wrap_content",
+                                    "constrained": true
+                                  },
+                                  "text_alignment_horizontal": "center",
+                                  "margins": {
+                                    "top": 10
+                                  }
+                                },
+                                {
+                                  "text": "View More",
+                                  "background": [
+                                    {
+                                      "type": "solid",
+                                      "color": "#000"
+                                    }
+                                  ],
+                                  "text_color": "#fff",
+                                  "corners": 6,
+                                  "type": "_template_button",
+                                  "width": {
+                                    "type": "match_parent"
+                                  },
+                                  "text_alignment_horizontal": "center",
+                                  "alignment_horizontal": "center",
+                                  "alignment_vertical": "center",
+                                  "paddings": {
+                                    "top": 10,
+                                    "right": 28,
+                                    "bottom": 10,
+                                    "left": 28
+                                  },
+                                  "margins": {
+                                    "top": 15
+                                  },
+                                  "actions": [
+                                    {
+                                      "log_id": "action_id",
+                                      "url": "@{product.getUrl('product_url')}",
+                                      "target":"_blank,"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "paddings": {
+                                "top": 15,
+                                "right": 15,
+                                "bottom": 15,
+                                "left": 15
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "item_spacing": 30,
+                  "cross_content_alignment": "start",
+                  "orientation": "horizontal",
+                  "paddings": {
+                    "top": 10,
+                    "right": 10,
+                    "bottom": 10,
+                    "left": 10
+                  }
+                }
+              ],
+              "paddings": {
+                "top": 20,
+                "right": 20,
+                "bottom": 20,
+                "left": 20
+              }
+            }
+          ],
+          "background": [
+            {
+              "color": "#ffffff",
+              "type": "solid"
+            }
+          ],
+          "height": {
+            "type": "match_parent"
+          },
+          "orientation": "overlap",
+          "type": "container"
+        }
+      }
+    ],
+    "variables": [
+      {
+        "type": "array",
+        "name": "products",
+        "value": []
+      }
+    ]
+  },
+  "templates": {
+    "_template_lottie": {
+      "type": "gif",
+      "scale": "fit",
+      "extensions": [
+        {
+          "id": "lottie",
+          "params": {
+            "$lottie_url": "lottie_url"
+          }
+        }
+      ],
+      "gif_url": "https://empty"
+    },
+    "_template_button": {
+      "type": "text",
+      "content_alignment_horizontal": "center",
+      "border": {
+        "$corner_radius": "corners"
+      },
+      "paddings": {
+        "bottom": 24,
+        "left": 28,
+        "right": 28,
+        "top": 22
+      },
+      "width": {
+        "type": "wrap_content"
+      }
+    },
+    "_template_close": {
+      "accessibility": {
+        "description": "Закрыть",
+        "mode": "merge",
+        "type": "button"
+      },
+      "actions": [
+        {
+          "log_id": "close_popup",
+          
+          "url": "div-screen://close"
+        }
+      ],
+      "image_url": "https://yastatic.net/s3/home/div/div_fullscreens/cross2.3.png",
+      "tint_color": "#73000000",
+      "type": "image"
+    },
+    "_template_list_item": {
+      "type": "container",
+      "orientation": "horizontal",
+      "items": [
+        {
+          "type": "image",
+          "image_url": "https://yastatic.net/s3/home/div/div_fullscreens/hyphen.4.png",
+          "$tint_color": "list_color",
+          "width": {
+            "type": "fixed",
+            "value": 28,
+            "unit": 28
+          },
+          "height": {
+            "type": "fixed",
+            "value": 28,
+            "unit": 28
+          },
+          "margins": {
+            "top": 2,
+            "right": 12,
+            "bottom": 2
+          }
+        },
+        {
+          "type": "text",
+          "$text": "list_text",
+          "$text_color": "list_color",
+          "font_size": 24,
+          "line_height": 32,
+          "font_weight": "medium",
+          "width": {
+            "type": "wrap_content",
+            "constrained": true
+          }
+        }
+      ]
+    }
+  }
+}
