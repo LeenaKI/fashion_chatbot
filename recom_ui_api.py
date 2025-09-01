@@ -174,6 +174,7 @@ app = FastAPI(title="Fashion RAG Chatbot")
 # ── Add CORS middleware ──────────────────────────────
 origins = [
     "http://localhost:3000",  # allow your frontend
+    "https://fashion-assistant-virid.vercel.app/"
 ]
 
 app.add_middleware(
