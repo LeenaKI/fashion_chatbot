@@ -1,4 +1,4 @@
-# app.py
+# recom_ui_api.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
@@ -175,3 +175,7 @@ def recommend_endpoint(
 ):
     result = recommend_products(query=req.query)
     return result
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("recom_ui_api:app", host="127.0.0.1", port=3000, reload=True)
