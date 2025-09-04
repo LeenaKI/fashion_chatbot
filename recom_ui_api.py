@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, MatchValue, Range
 from wordllama import WordLlama
-import google.generativeai as genai
+from groq import Groq
 from fastapi.middleware.cors import CORSMiddleware
 
 # ── Load environment ─────────────────────────────────────────────
@@ -20,27 +20,28 @@ QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "westside_mens").strip()
 QDRANT_VECTOR_NAME = os.getenv("QDRANT_VECTOR_NAME", "").strip()
 EMBED_DIM = int(os.getenv("EMBED_DIM", "64"))
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash").strip()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
+
+groq_client = Groq(api_key=GROQ_API_KEY)
+
 DIVKIT_JSON_PATH = os.getenv("DIVKIT_JSON_PATH", "./divkit_card.json").strip()
 
 # ── Validate env ────────────────────────────────────────────────
 if not QDRANT_URL or not QDRANT_API_KEY:
     raise RuntimeError("Missing Qdrant config. Set QDRANT_URL and QDRANT_API_KEY in .env.")
-if not GEMINI_API_KEY:
-    raise RuntimeError("Missing Gemini key. Set GEMINI_API_KEY in .env.")
+if not GROQ_API_KEY:
+    raise RuntimeError("Missing Groq key. Set GROQ_API_KEY in .env.")
 
 # ── Init clients ────────────────────────────────────────────────
 qdrant = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 wl = WordLlama.load(trunc_dim=EMBED_DIM)
-genai.configure(api_key=GEMINI_API_KEY)
-gemini = genai.GenerativeModel(GEMINI_MODEL)
+
 
 # ── Load divkit JSON ────────────────────────────────────────────
 """ 
 def _load_divkit_json(path: str) -> Dict[str, Any]:
     try:
-        with open(path, "r", encoding="utf-8when") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {
@@ -104,28 +105,22 @@ def _validate_products(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             valid.append(r)
     return valid
 
-def _llm_reply(user_query: str, products: List[Dict[str, Any]]) -> str:
-    bullets = []
-    for r in products[:5]:
-        name = r.get("product_type") or "Item"
-        price = r.get("price")
-        desc = (r.get("description") or "")[:120]
-        purl = r.get("product_url") or ""
-        price_txt = f"₹{price}" if price is not None else ""
-        bullets.append(f"- {name}: {price_txt} — {desc}... {purl}")
-
-    prompt = (
-        "You are a helpful fashion shopping assistant. "
-        "Reply in clear Indian English, one short paragraph, practical tone. "
-        "Reference 2–3 items by type/price. Avoid flowery language.\n\n"
-        f"User request: {user_query}\n\n"
-        "Top matches:\n" + "\n".join(bullets)
-    )
-    try:
-        resp = gemini.generate_content(prompt)
-        return (resp.text or "").strip()
-    except Exception as e:
-        return f"(LLM reply unavailable: {type(e).__name__}: {e})"
+TOOL_DEFINITIONS = [
+    {
+        "name": "recommend_products",
+        "description": "Search products by query, type, and price",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query"},
+                "product_type": {"type": "string", "description": "Optional category"},
+                "price_min": {"type": "number"},
+                "price_max": {"type": "number"}
+            },
+            "required": ["query"]
+        }
+    }
+]
 
 # ── Core function ───────────────────────────────────────────────
 def recommend_products(
@@ -161,12 +156,12 @@ def recommend_products(
     if strict_only:
         rows = _validate_products(rows)
 
-    message = _llm_reply(query, rows)
+    #message = _llm_reply(query, rows)
 
     return {
         "products": rows,
         "divkitJSON": DIVKIT_JSON,
-        "message": message,
+        #"message": message,
     }
 
 app = FastAPI(title="Fashion RAG Chatbot")
@@ -174,7 +169,7 @@ app = FastAPI(title="Fashion RAG Chatbot")
 # ── Add CORS middleware ──────────────────────────────
 origins = [
     "http://localhost:3000",  # allow your frontend
-    "https://fashion-assistant-virid.vercel.app"
+    "https://fashion-assistant-virid.vercel.app",  # allow your deployed frontend
 ]
 
 app.add_middleware(
@@ -187,6 +182,11 @@ app.add_middleware(
 
 class RecommendQuerySimple(BaseModel):
     query: str
+
+    
+@app.get("/tools")
+def get_tools():
+    return {"tools": TOOL_DEFINITIONS}
 
 @app.post("/recommend", response_model=Dict)
 def recommend_endpoint(
