@@ -105,22 +105,32 @@ def _validate_products(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             valid.append(r)
     return valid
 
-TOOL_DEFINITIONS = [
-    {
-        "name": "recommend_products",
-        "description": "Search products by query, type, and price",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "Search query"},
-                "product_type": {"type": "string", "description": "Optional category"},
-                "price_min": {"type": "number"},
-                "price_max": {"type": "number"}
-            },
-            "required": ["query"]
-        }
-    }
-]
+def _llm_reply(user_query: str, products: List[Dict[str, Any]]) -> str:
+    bullets = []
+    for r in products[:5]:
+        name = r.get("product_type") or "Item"
+        price = r.get("price")
+        desc = (r.get("description") or "")[:120]
+        purl = r.get("product_url") or ""
+        price_txt = f"₹{price}" if price is not None else ""
+        bullets.append(f"- {name}: {price_txt} — {desc}... {purl}")
+
+    prompt = (
+        "You are a helpful fashion shopping assistant. "
+        "Reply in clear Indian English, one short paragraph, practical tone. "
+        "Reference 2–3 items by type/price. Avoid flowery language.\n\n"
+        f"User request: {user_query}\n\n"
+        "Top matches:\n" + "\n".join(bullets)
+    )
+
+    try:
+        resp = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",  # you can also try "mixtral-8x7b-32768"
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return resp.choices[0].message.content.strip()
+    except Exception as e:
+        return f"(LLM reply unavailable: {type(e).__name__}: {e})"
 
 # ── Core function ───────────────────────────────────────────────
 def recommend_products(
@@ -156,12 +166,12 @@ def recommend_products(
     if strict_only:
         rows = _validate_products(rows)
 
-    #message = _llm_reply(query, rows)
+    message = _llm_reply(query, rows)
 
     return {
         "products": rows,
         "divkitJSON": DIVKIT_JSON,
-        #"message": message,
+        "message": message,
     }
 
 app = FastAPI(title="Fashion RAG Chatbot")
@@ -182,11 +192,6 @@ app.add_middleware(
 
 class RecommendQuerySimple(BaseModel):
     query: str
-
-    
-@app.get("/tools")
-def get_tools():
-    return {"tools": TOOL_DEFINITIONS}
 
 @app.post("/recommend", response_model=Dict)
 def recommend_endpoint(
